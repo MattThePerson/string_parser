@@ -1,34 +1,31 @@
 package string_parser
 
 type StringParser struct {
-	Formats []string
+	formats []string
 }
 
-func NewStringParser(formats []string) *StringParser {
-	formats = ExpandFormats(formats)
+func NewStringParser(format string) *StringParser {
+	formats := ExpandFormats(format)
 	return &StringParser{
-		Formats: formats,
+		formats: formats,
 	}
 }
 
-func (sp *StringParser) Parse(input string) (map[string]any, error) {
-	data := map[string]any{
-		"nothing": "here",
+func NewStringParserFromList(formats []string) *StringParser {
+	formats = ExpandFormatsList(formats)
+	return &StringParser{
+		formats: formats,
 	}
+}
+
+func ExpandFormats(format string) []string {
 
 	// ...
 
-	return data, nil
+	return []string{format}
 }
 
-func (sp *StringParser) Format(data map[string]any) (string, error) {
-
-	// ...
-
-	return "Here's your string, pervert", nil
-}
-
-func ExpandFormats(formats []string) []string {
+func ExpandFormatsList(formats []string) []string {
 
 	// ...
 
