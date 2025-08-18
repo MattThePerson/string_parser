@@ -16,7 +16,7 @@ func (sp *StringParser) Parse(input string) (map[string]any, error) {
 		}
 	}
 
-	return map[string]any{}, fmt.Errorf("")
+	return map[string]any{}, fmt.Errorf("no matching format found for input: \"%s\"", input)
 }
 
 // parseUsingFormat parses data from a string given a single format
