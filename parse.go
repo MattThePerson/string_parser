@@ -4,13 +4,10 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"strings"
 )
 
 // Parse attempts to parse data from a string using StringParser's list of formats
 func (sp *StringParser) Parse(input string) (map[string]any, error) {
-
-	input = strings.ReplaceAll(input, "\\", "/")
 
 	for _, format := range sp.formats {
 		data, err := parseUsingFormat(input, format)
