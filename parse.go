@@ -68,7 +68,7 @@ func getExtractorItems(format_str []rune) []ExtractorItem {
 	items := []ExtractorItem{}
 
 	start_i := getNextAttributeStartIndex(format_str, 0)
-	begin_pattern := format_str[:start_i]
+	begin_pattern := unescapeBraces(format_str[:start_i])
 	items = append(items, ExtractorItem{"", "", begin_pattern})
 
 	for start_i < len(format_str) {
@@ -87,7 +87,7 @@ func getExtractorItems(format_str []rune) []ExtractorItem {
 		}
 		// get end pattern
 		start_i = getNextAttributeStartIndex(format_str, end_i)
-		end_pattern := format_str[end_i+1 : start_i]
+		end_pattern := unescapeBraces(format_str[end_i+1 : start_i])
 		items = append(items, ExtractorItem{
 			Name:       string(substring),
 			TypeVerb:   type_verb,
