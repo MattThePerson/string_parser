@@ -121,26 +121,34 @@ func getSubtringStartIndex(str []rune, substr []rune) int {
 	return -1
 }
 
-// dateFormatToRegex converts a strftime-style date format (e.g. %Y-%m-%d) to an anchored regex
-func dateFormatToRegex(format string) string {
-	result := "^"
+type parsedDateFormat struct {
+	pattern string
+	verbs   []string // verb letter per capture group, e.g. ["Y","m","d"]
+}
+
+// parseDateFormat converts a strftime-style format to a regex with capture groups and tracks verb order
+func parseDateFormat(format string) parsedDateFormat {
+	pattern := "^"
+	verbs := []string{}
 	for i := 0; i < len(format); {
 		if format[i] == '%' && i+1 < len(format) {
+			verb := string(format[i+1])
 			switch format[i+1] {
 			case 'Y':
-				result += `\d{4}`
+				pattern += `(\d{4})`
 			case 'm', 'd':
-				result += `\d{2}`
+				pattern += `(\d{2})`
 			default:
-				result += regexp.QuoteMeta(string(format[i+1]))
+				pattern += "(" + regexp.QuoteMeta(verb) + ")"
 			}
+			verbs = append(verbs, verb)
 			i += 2
 		} else {
-			result += regexp.QuoteMeta(string(format[i]))
+			pattern += regexp.QuoteMeta(string(format[i]))
 			i++
 		}
 	}
-	return result + "$"
+	return parsedDateFormat{pattern + "$", verbs}
 }
 
 // runesToType
@@ -149,10 +157,24 @@ func runesToType(input []rune, type_verb string) (any, error) {
 	input_str := string(input)
 
 	if strings.Contains(type_verb, "%") {
-		pattern := dateFormatToRegex(type_verb)
-		matched, _ := regexp.MatchString(pattern, input_str)
-		if !matched {
+		df := parseDateFormat(type_verb)
+		rx, _ := regexp.Compile(df.pattern)
+		matches := rx.FindStringSubmatch(input_str)
+		if matches == nil {
 			return "", fmt.Errorf("value %q does not match date format %q", input_str, type_verb)
+		}
+		for i, verb := range df.verbs {
+			val, _ := strconv.Atoi(matches[i+1])
+			switch verb {
+			case "m":
+				if val < 1 || val > 12 {
+					return "", fmt.Errorf("month %d out of range in %q", val, input_str)
+				}
+			case "d":
+				if val < 1 || val > 31 {
+					return "", fmt.Errorf("day %d out of range in %q", val, input_str)
+				}
+			}
 		}
 		return input_str, nil
 	}
