@@ -1,5 +1,7 @@
 package string_parser
 
+import "strings"
+
 type StringParser struct {
 	formats []string
 }
@@ -19,15 +21,19 @@ func NewStringParserFromList(formats []string) *StringParser {
 }
 
 func ExpandFormats(format string) []string {
-
-	// ...
-
-	return []string{format}
+	formats := []string{format}
+	if strings.Contains(format, "/") {
+		formats = append(formats, strings.ReplaceAll(format, "/", "\\"))
+	} else if strings.Contains(format, "\\") {
+		formats = append(formats, strings.ReplaceAll(format, "\\", "/"))
+	}
+	return formats
 }
 
 func ExpandFormatsList(formats []string) []string {
-
-	// ...
-
-	return formats
+	expanded := []string{}
+	for _, f := range formats {
+		expanded = append(expanded, ExpandFormats(f)...)
+	}
+	return expanded
 }
