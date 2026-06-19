@@ -3,7 +3,9 @@ package string_parser
 import (
 	"fmt"
 	"log"
+	"regexp"
 	"strconv"
+	"strings"
 )
 
 // Parse attempts to parse data from a string using StringParser's list of formats
@@ -119,10 +121,41 @@ func getSubtringStartIndex(str []rune, substr []rune) int {
 	return -1
 }
 
+// dateFormatToRegex converts a strftime-style date format (e.g. %Y-%m-%d) to an anchored regex
+func dateFormatToRegex(format string) string {
+	result := "^"
+	for i := 0; i < len(format); {
+		if format[i] == '%' && i+1 < len(format) {
+			switch format[i+1] {
+			case 'Y':
+				result += `\d{4}`
+			case 'm', 'd':
+				result += `\d{2}`
+			default:
+				result += regexp.QuoteMeta(string(format[i+1]))
+			}
+			i += 2
+		} else {
+			result += regexp.QuoteMeta(string(format[i]))
+			i++
+		}
+	}
+	return result + "$"
+}
+
 // runesToType
 func runesToType(input []rune, type_verb string) (any, error) {
 
 	input_str := string(input)
+
+	if strings.Contains(type_verb, "%") {
+		pattern := dateFormatToRegex(type_verb)
+		matched, _ := regexp.MatchString(pattern, input_str)
+		if !matched {
+			return "", fmt.Errorf("value %q does not match date format %q", input_str, type_verb)
+		}
+		return input_str, nil
+	}
 
 	switch type_verb {
 
@@ -132,12 +165,15 @@ func runesToType(input []rune, type_verb string) (any, error) {
 	case "d":
 		value, err := strconv.Atoi(input_str)
 		if err != nil {
-			return "", nil
+			return "", fmt.Errorf("value %q is not a valid integer", input_str)
 		}
 		return value, nil
 
 	case "S":
-		// ...
+		if strings.ContainsAny(input_str, " \t") {
+			return "", fmt.Errorf("value %q contains whitespace, :S requires a no-space string", input_str)
+		}
+		return input_str, nil
 
 	}
 
