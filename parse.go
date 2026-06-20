@@ -52,6 +52,10 @@ func parseUsingFormat(input string, format string) (map[string]any, error) {
 		start_i = end_i + len(eitem.EndPattern)
 	}
 
+	if start_i != len(input_runes) {
+		return map[string]any{}, fmt.Errorf("trailing content not matched by format: %q", string(input_runes[start_i:]))
+	}
+
 	return data, nil
 }
 
