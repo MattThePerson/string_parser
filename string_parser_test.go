@@ -311,6 +311,16 @@ var (
             "some path/Scarlit Sandals, Chanel Convertible - TwistAndShout - [2023] [WhenThingsHappen] Sleeping in a Room",
             map[string]any{"rel_parent": "some path", "primary_actors": "Scarlit Sandals, Chanel Convertible", "studio": "TwistAndShout", "year": 2023, "line": "WhenThingsHappen", "title": "Sleeping in a Room"},
         },
+        { //
+            FULL_FORMATS,
+            "pth/Angelina Jolie - Paramount - [2024] Some Movie [Tom Cruise]",
+            map[string]any{"rel_parent": "pth", "primary_actors": "Angelina Jolie", "studio": "Paramount", "year": 2024, "title": "Some Movie", "secondary_actors": "Tom Cruise"},
+        },
+        {
+            FULL_FORMATS,
+            "pth/YoutubeArchive - Youtube - [2023-06-20] Quickie {yt-1234}",
+            map[string]any{"rel_parent": "pth", "primary_actors": "YoutubeArchive", "studio": "Youtube", "date_released": "2023-06-20", "title": "Quickie", "source_id": "yt-1234"},
+        },
     }
 )
 
