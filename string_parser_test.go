@@ -284,15 +284,15 @@ type ParseMultiTestItem struct {
 
 var (
     FULL_FORMATS = []string{
-        "{rel_parent}/{primary_actors} - {studio:S} - [{year:d}];opt [{date_released_short:%Y-%m}];opt [{date_released:%Y-%m-%d}];opt [{date_released_alt:%Y.%m.%d}];opt [{line:S}];opt {title} [{secondary_actors}];opt {{{source_id:S}}};opt",
-        "{rel_parent}/[{studio:S}] [{year:d}];opt [{date_released:%Y-%m-%d}];opt [{date_released_alt:%Y.%m.%d}];opt [{line:S}];opt {title} [{primary_actors}];opt {{{source_id:S}}};opt",
-        "{rel_parent}/[{date_released:%Y-%m-%d}] {title} {{{source_id:S}}}",
-        "{rel_parent}/[{date_released:%Y-%m-%d} {time_released}] {title} [{source_id_sec}];opt [{source_id}]",
-        "{rel_parent}/{primary_actors} [{dvd_code:S}] [{date_released:%Y-%m-%d}];opt [{date_released_alt:%Y.%m.%d}];opt [{studio:S}];opt {title}",
-        "{rel_parent}/[{dvd_code:S}]",
-        "{rel_parent}/{primary_actors} - [{year:d}];opt [{date_released:%Y-%m-%d}];opt {title} ({year:d});opt",
-        "{rel_parent}/{title} ({year:d}) [{primary_actors}];opt",
-        "{rel_parent}/{title}",
+        "{rel_parent:P}/{primary_actors} - {studio:S} - [{year:d}];opt [{date_released_short:%Y-%m}];opt [{date_released:%Y-%m-%d}];opt [{date_released_alt:%Y.%m.%d}];opt [{line:S}];opt {title} [{secondary_actors}];opt {{{source_id:S}}};opt",
+        "{rel_parent:P}/[{studio:S}] [{year:d}];opt [{date_released:%Y-%m-%d}];opt [{date_released_alt:%Y.%m.%d}];opt [{line:S}];opt {title} [{primary_actors}];opt {{{source_id:S}}};opt",
+        "{rel_parent:P}/[{date_released:%Y-%m-%d}] {title} {{{source_id:S}}}",
+        "{rel_parent:P}/[{date_released:%Y-%m-%d} {time_released}] {title} [{source_id_sec}];opt [{source_id}]",
+        "{rel_parent:P}/{primary_actors} [{dvd_code:S}] [{date_released:%Y-%m-%d}];opt [{date_released_alt:%Y.%m.%d}];opt [{studio:S}];opt {title}",
+        "{rel_parent:P}/[{dvd_code:S}]",
+        "{rel_parent:P}/{primary_actors} - [{year:d}];opt [{date_released:%Y-%m-%d}];opt {title} ({year:d});opt",
+        "{rel_parent:P}/{title} ({year:d}) [{primary_actors}];opt",
+        "{rel_parent:P}/{title}",
     }
 
     ParseTestsMulti = []ParseMultiTestItem{
@@ -320,6 +320,11 @@ var (
             FULL_FORMATS,
             "pth/YoutubeArchive - Youtube - [2023-06-20] Quickie {yt-1234}",
             map[string]any{"rel_parent": "pth", "primary_actors": "YoutubeArchive", "studio": "Youtube", "date_released": "2023-06-20", "title": "Quickie", "source_id": "yt-1234"},
+        },
+        {
+            FULL_FORMATS,
+            "A:/full/path/to/thing/filename here",
+            map[string]any{"rel_parent": "A:/full/path/to/thing", "title": "filename here"},
         },
     }
 )

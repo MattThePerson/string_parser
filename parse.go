@@ -38,7 +38,13 @@ func parseUsingFormat(input string, format string) (map[string]any, error) {
 			continue
 		}
 		// get end_i
-		end_i := start_i + getSubtringStartIndex(input_runes[start_i:], eitem.EndPattern)
+		var idx int
+		if eitem.TypeVerb == "P" {
+			idx = getLastSubstringStartIndex(input_runes[start_i:], eitem.EndPattern)
+		} else {
+			idx = getSubtringStartIndex(input_runes[start_i:], eitem.EndPattern)
+		}
+		end_i := start_i + idx
 		if end_i < start_i {
 			return data, fmt.Errorf("end pattern not in string: %s", string(eitem.EndPattern))
 		}
@@ -199,6 +205,9 @@ func runesToType(input []rune, type_verb string) (any, error) {
 		if strings.ContainsAny(input_str, " \t") {
 			return "", fmt.Errorf("value %q contains whitespace, :S requires a no-space string", input_str)
 		}
+		return input_str, nil
+
+	case "P":
 		return input_str, nil
 
 	}

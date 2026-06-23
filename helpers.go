@@ -1,5 +1,18 @@
 package string_parser
 
+// getLastSubstringStartIndex returns the start index of the LAST occurrence of substr within str, or -1 if not found
+func getLastSubstringStartIndex(str []rune, substr []rune) int {
+	if len(substr) == 0 {
+		return len(str)
+	}
+	for i := len(str) - len(substr); i >= 0; i-- {
+		if runesAreEqual(str[i:i+len(substr)], substr) {
+			return i
+		}
+	}
+	return -1
+}
+
 func runesAreEqual(a, b []rune) bool {
 	if len(a) != len(b) {
 		return false
