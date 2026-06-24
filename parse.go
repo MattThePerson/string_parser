@@ -207,6 +207,15 @@ func runesToType(input []rune, type_verb string) (any, error) {
 		}
 		return input_str, nil
 
+	case "K":
+		if strings.ContainsAny(input_str, " \t") {
+			return "", fmt.Errorf("value %q contains whitespace, :K requires a no-space string", input_str)
+		}
+		if _, err := strconv.Atoi(input_str); err == nil {
+			return "", fmt.Errorf("value %q is a plain integer, :K requires a non-numeric code", input_str)
+		}
+		return input_str, nil
+
 	case "P":
 		return input_str, nil
 

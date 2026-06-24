@@ -1,42 +1,47 @@
 # String Parser
 
+A Go library for extracting structured data from strings using format patterns.
 
+## Format syntax
 
+Fields are written as `{name}` or `{name:verb}` inside a format string. Literal text outside braces is matched exactly. Use `{{` and `}}` to include literal brace characters.
 
+```
+"{primary_actors} - {studio:S} - [{year:d}] {title}"
+```
+
+### Optional sections
+
+Append `;opt` to a token to make that section optional. The parser will try all combinations, preferring the most-inclusive match.
+
+```
+"{primary_actors} - {studio:S} - [{year:d}];opt [{date_released:%Y-%m-%d}];opt {title}"
+```
+
+---
 
 ## Type verbs
 
+| Verb | Name | Description |
+|---|---|---|
+| *(none)* | any | Accepts any string value. This is the default. |
+| `:d` | integer | Parses the value as a base-10 integer. Fails if the value is not a valid integer. |
+| `:S` | single-word | Accepts only strings with no whitespace. Useful for IDs, codes, or slugs. |
+| `:K` | code | Like `:S` (no whitespace), but also rejects plain integers. Use for alphanumeric codes like `ABC-123` where a bare number would be ambiguous with `:d` fields. |
+| `:P` | path | Matches up to the **last** occurrence of the field's separator instead of the first. Use for fields that represent filesystem paths, which may themselves contain the separator character (e.g. `/`). |
+| `:%Y-%m-%d` | date | Matches a date string against a strftime-style pattern. Supported directives: `%Y` (4-digit year), `%m` (2-digit month, 01–12), `%d` (2-digit day, 01–31). Fails if the value does not match the pattern or contains out-of-range values. |
 
-| verb | description |
+### `:P` example
+
+With format `{rel_parent:P}/{title}` and input `A:/full/path/to/thing/filename here`:
+
+- **Without `:P`** — stops at first `/`: `rel_parent = "A:"`, `title = "full/path/to/thing/filename here"`
+- **With `:P`** — stops at last `/`: `rel_parent = "A:/full/path/to/thing"`, `title = "filename here"`
+
+### Date format examples
+
+| Verb | Matches |
 |---|---|
-| %v | default format for the value |
-| %#v | Go-syntax representation of the value |
-| %T | type of the value |
-| %% | literal percent sign |
-|    %t | true or false |
-|| **Integer:** |
-|    %b | base 2 (binary) |
-|    %c | the character represented by the corresponding Unicode code point |
-|    %d | base 10 (decimal) |
-|    %o | base 8 (octal) |
-|    %O | base 8 with 0o prefix |
-|    %q | single-quoted character literal (Go syntax) |
-|    %x | base 16 (hex, lowercase) |
-|    %X | base 16 (hex, uppercase) |
-|    %U | Unicode format: U+1234 (upper case hex) |
-|| **Floating-point and complex:** |
-|    %b | decimal with exponent of two, power of two notation (e.g., 123456p-78) |
-|    %e | scientific notation (e.g., 1.234456e+78) |
-|    %E | scientific notation (e.g., 1.234456E+78) |
-|    %f | decimal point but no exponent (e.g., 123.456) |
-|    %F | synonym for %f |
-|    %g | %e for large exponents, %f otherwise |
-|    %G | %E for large exponents, %F otherwise |
-|    %x | hexadecimal notation with fractional part, powers of two exponent |
-|| **String and slice of bytes:** |
-|    %s | uninterpreted bytes of the string or slice |
-|    %q | double-quoted string (Go syntax) |
-|    %x | base 16, lower-case, two characters per byte |
-|    %X | base 16, upper-case, two characters per byte |
-    
-
+| `:%Y-%m-%d` | `2024-06-19` |
+| `:%Y-%m` | `2024-06` |
+| `:%Y.%m.%d` | `2024.06.19` |
